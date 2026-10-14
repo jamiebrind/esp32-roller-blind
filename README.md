@@ -12,6 +12,7 @@ A printed bead-chain blind motor with local web controls, encoder-based limits, 
 4. [Install and configure firmware](docs/FIRMWARE.md)
 5. [Calibrate, schedule and operate](docs/OPERATION.md)
 6. [Troubleshooting](docs/TROUBLESHOOTING.md)
+7. [Fusion CAD screenshot gallery](docs/CAD_GALLERY.md)
 
 ## What it does
 

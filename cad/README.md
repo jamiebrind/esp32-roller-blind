@@ -1,5 +1,7 @@
 # V15 CAD and print files
 
+[View the six-image Fusion CAD gallery](../docs/CAD_GALLERY.md).
+
 - [Fusion native F3D](RollerBlind_V15.f3d)
 - [STEP assembly](RollerBlind_V15.step)
 - [Four STL print parts](stl/)
