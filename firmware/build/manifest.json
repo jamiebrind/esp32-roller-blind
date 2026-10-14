@@ -1,7 +1,7 @@
 {
   "hardware": "esp32c3-drv8871",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "settingsSchema": 1,
-  "length": 1303520,
-  "sha256": "190abb2719cad4463bf8e9945a1447717471ca449f0f9b44f6ea090e51da15e0"
+  "length": 1303584,
+  "sha256": "bd375b66712546d89f47cb3560d8485e27311dc55ad284b053615f4f1eacb58c"
 }

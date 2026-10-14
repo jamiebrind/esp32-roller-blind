@@ -1,6 +1,6 @@
 # Firmware installation and development
 
-Current version: **2.0.3**, ESP32-C3, 4MB flash, DRV8871 GPIO0/1, encoder GPIO3/4. There is no default administrator password or embedded Wi-Fi password. Set your own credentials. Existing controllers keep compatible saved settings unless you erase flash.
+Current release: **2.0.4**, ESP32-C3, 4MB flash, DRV8871 GPIO0/1, encoder GPIO3/4. There is no default administrator password or embedded Wi-Fi password. Set your own credentials. Existing controllers keep compatible saved settings unless you erase flash.
 
 ## Initial install: prebuilt firmware
 
@@ -38,7 +38,7 @@ On the Firmware page select:
 - `firmware/build/ScheduledBlind.ino.bin`
 - Matching `firmware/build/manifest.json`
 
-Do not select the bootloader, partitions, boot_app0 or a merged image. The updater stops the motor, pauses schedules, checks hardware/schema/file length/SHA-256 and writes the inactive application slot. Compatible settings remain. After reboot, confirm position before enabling automation. Interrupted transfer keeps the old image; a successfully transferred but faulty application can still require USB recovery. There is no promised application health-based rollback.
+Do not select the bootloader, partitions, boot_app0 or a merged image. The updater stops the motor, pauses schedules, checks hardware/schema/file length/SHA-256 and writes the inactive application slot. Compatible settings remain. From 2.0.4, a valid stopped position is restored automatically after reboot. Recovery is required if movement was interrupted or the saved record is invalid/mismatched; this assumes the chain did not move while off. Interrupted transfer keeps the old image; a successfully transferred but faulty application can still require USB recovery. There is no promised application health-based rollback.
 
 ## Build from source
 
@@ -50,7 +50,7 @@ arduino-cli core install esp32:esp32@3.3.12 --additional-urls https://espressif.
 arduino-cli lib install ArduinoJson@7.4.3
 python firmware/tools/embed_web.py
 arduino-cli compile --fqbn esp32:esp32:esp32c3:CDCOnBoot=cdc,UploadSpeed=115200 --build-property upload.maximum_size=1966080 --output-dir firmware/build firmware/ScheduledBlind
-python firmware/tools/release_manifest.py --binary firmware/build/ScheduledBlind.ino.bin --version 2.0.3 --output firmware/build/manifest.json
+python firmware/tools/release_manifest.py --binary firmware/build/ScheduledBlind.ino.bin --version 2.0.4 --output firmware/build/manifest.json
 ```
 
 The sketch includes `partitions.csv`; each app slot is 1,966,080 bytes. Update the source FIRMWARE_VERSION and manifest version together for future releases. Rebuilding can change binary hashes; always regenerate the matching manifest. Source/web editing does not modify the installed device until you upload.
@@ -63,10 +63,14 @@ arduino-cli upload --fqbn esp32:esp32:esp32c3:CDCOnBoot=cdc,UploadSpeed=115200 -
 
 ## Tests and evidence
 
-The 2.0.3 release passed 20 C++ test executables, 10 JavaScript cases and 4 Python cases; compile used 1,303,375 bytes flash and 42,232 bytes static RAM. A real Wi-Fi update/reboot retained credentials and calibration. The builder subsequently reported working motor/encoder feedback and supplied installed photographs. Precise loaded stopping/force limits and a real multi-blind deployment are not established by those checks.
+The 2.0.4 release passed 21 C++ test executables, 10 JavaScript cases and 4 Python cases; compile used 1,303,433 bytes flash and 42,232 bytes static RAM. A real Wi-Fi update/reboot retained credentials and calibration. The builder subsequently reported working motor/encoder feedback and supplied installed photographs. Precise loaded stopping/force limits and a real multi-blind deployment are not established by those checks.
 
 The `firmware/tests/` sources are included. JavaScript tests run with `node --test firmware/tests/test_web.mjs`; Python tests use Python 3. C++ tests require a C++17 compiler (some also require separately installed ArduinoJson headers). See [firmware/README.md](../firmware/README.md) for test commands. Automated browser file-picker upload was not verified; the device updater itself was tested via authenticated HTTP.
 
 ### Live schedule edit test (2.0.3)
 
 On the installed prototype after calibration, a temporary evening rule raised to an encoder-reported 20%. Editing that same already-used rule to a later time then lowered to 0%. Both events ran, encoder counts changed, and the motor stopped with no fault. Original rules were restored. This checks the reported same-day edit defect; it is not a long-term stopping/obstruction qualification.
+
+### Live restart position retention (2.0.4)
+
+The real Wi-Fi update rebooted a calibrated stopped prototype. It returned with the same encoder-derived percentage, positionKnown true, unchanged schedules/calibration, zero motor direction and no fault. No position-recovery confirmation was sent. Unit tests separately cover interrupted movement, invalid records and mismatched calibration remaining unknown. This verifies a firmware restart; test a physical power cycle on your own idle assembly as well.

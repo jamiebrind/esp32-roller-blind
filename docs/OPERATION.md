@@ -12,7 +12,9 @@ Reverse motor in Settings if needed, then recalibrate. A fault during calibratio
 
 ## After a reboot or power loss
 
-The encoder measures incremental movement, not an absolute position. Every reboot makes position unknown. Saved travel span remains, but automatic movement/schedules are blocked until you supervise the blind to its saved upper reference and confirm it, or calibrate both endpoints again. Only confirm the saved upper reference when the blind is actually at that same physical position. Do not pretend its position is known after manually moving or slipping the chain.
+From firmware 2.0.4, a valid last stopped position is restored automatically after restart, provided it matches the saved calibration. You do not need to press Recover position after a normal power cycle. This assumes the beads and blind have not moved while power was off. The raw encoder counter restarts at zero, but an offset preserves the saved logical position.
+
+If power was lost during movement, the saved position is invalid/missing, or calibration changed, position remains unknown and automatic travel/schedules stay blocked. Supervise the blind to its saved upper reference and confirm it, or recalibrate. Only confirm the upper reference when physically at that same saved position. If the chain moved manually or slipped while off, recover/recalibrate even if the displayed saved position looks valid. Schedules resume after valid NTP time; elapsed events are not replayed.
 
 ## Schedules
 

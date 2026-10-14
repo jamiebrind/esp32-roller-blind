@@ -14,6 +14,10 @@ A printed bead-chain blind motor with local web controls, encoder-based limits, 
 6. [Troubleshooting](docs/TROUBLESHOOTING.md)
 7. [Fusion CAD screenshot gallery](docs/CAD_GALLERY.md)
 
+## Position retention — 2.0.4
+
+Normal restarts restore the last valid stopped position; interrupted travel still requires recovery. See [operation](docs/OPERATION.md).
+
 ## Schedule edit fix — 2.0.3
 
 Firmware 2.0.3 corrects edited rules being skipped for the rest of the day. See [CHANGELOG.md](CHANGELOG.md). Version 2.0.3 was installed over Wi-Fi and its reboot, retained settings and stopped motor state were verified on the prototype.
@@ -28,7 +32,7 @@ Firmware 2.0.3 corrects edited rules being skipped for the rest of the day. See 
 - Optional dashboard for up to eight blinds and eight groups, while each blind retains its own calibration/schedules.
 - Continuous movement capped at 60 seconds, with missing/slow encoder feedback faults.
 
-This is a hobby prototype. Software limits measure motor rotation; they do not detect chain slip, chain tension or obstructions. Supervise initial calibration and loaded tests. After every reboot, confirm the saved upper reference or recalibrate before automatic travel.
+This is a hobby prototype. Software limits measure motor rotation; they do not detect chain slip, chain tension or obstructions. Supervise initial calibration and loaded tests. From 2.0.4, normal restarts restore a valid stopped position automatically, assuming no chain movement while off. Interrupted movement or invalid/mismatched saved data still requires recovery.
 
 ## Files
 

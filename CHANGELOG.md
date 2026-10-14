@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.0.4 — 14 October 2026
+
+- Automatically restore a valid last stopped position after restart, assuming the chain did not move while off.
+- Retain recovery requirements for interrupted movement, invalid/missing saved position and mismatched calibration.
+- Keep the motor stopped on boot and retain missed-event suppression.
+- Raw encoder count resets at boot; the saved logical position uses an offset.
+- Verified: 21 C++ suites, 10 JavaScript cases, 4 Python cases and independent review. Real Wi-Fi update/restart retained the prototype’s known stopped position, schedules and calibration without recovery. A physical cold power-cycle test remains separate from this firmware-restart check.
+
 ## 2.0.3 — 14 October 2026
 
 - Fix edited schedules being suppressed for the rest of the day after the same rule ID was executed or skipped.
