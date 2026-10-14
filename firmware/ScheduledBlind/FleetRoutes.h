@@ -1,0 +1,45 @@
+#pragma once
+void sendFleet(){if(!requireAdmin())return;JsonDocument d;xSemaphoreTake(fleetMutex,portMAX_DELAY);fleetJson(fleetRegistry->config,d,false);for(JsonVariant item:d["devices"].as<JsonArray>()){auto id=item["id"].as<std::string>();auto i=fleetStatuses.find(id);if(i!=fleetStatuses.end()){auto s=i->second;item["state"]=s.state;item["stale"]=!s.contacted||FleetDispatch::stale(millis(),s.seen);item["lastContactSeconds"]=s.contacted?int(uint32_t(millis()-s.seen)/1000):-1;item["atUpper"]=s.atUpper;item["atLower"]=s.atLower;item["positionKnown"]=s.positionKnown;item["positionPercent"]=s.percent;item["direction"]=s.direction;item["fault"]=s.fault;item["updating"]=s.updating;}}
+ xSemaphoreGive(fleetMutex);for(JsonVariant item:d["devices"].as<JsonArray>())if(item["id"].as<std::string>()==deviceId){xSemaphoreTake(stateMutex,portMAX_DELAY);auto s=motion.status();item["state"]="Online";item["stale"]=false;item["lastContactSeconds"]=0;item["atUpper"]=motion.atUpper();item["atLower"]=motion.atLower();item["positionKnown"]=s.positionKnown;item["positionPercent"]=motion.percent();item["direction"]=s.direction;item["fault"]=s.fault;item["updating"]=maintenance;xSemaphoreGive(stateMutex);}d["ok"]=true;d["localId"]=deviceId;String text;serializeJson(d,text);web.sendHeader("Cache-Control","no-store");web.send(200,"application/json",text);}
+bool fleetWritesAllowed(){xSemaphoreTake(stateMutex,portMAX_DELAY);bool allowed=!maintenance&&!motion.status().direction&&!appliedDirection;xSemaphoreGive(stateMutex);if(!allowed)replyError("Stop this blind before changing setup",409);return allowed;}
+void registerFleetRoutes(){
+ web.on("/api/fleet/status",HTTP_GET,sendFleet);
+ web.on("/api/fleet/key",HTTP_GET,[]{if(!requireAdmin())return;JsonDocument d;xSemaphoreTake(fleetMutex,portMAX_DELAY);d["pairingKey"]=fleetStorage.pairingKey();xSemaphoreGive(fleetMutex);d["ok"]=true;d["deviceId"]=deviceId;String text;serializeJson(d,text);web.sendHeader("Cache-Control","no-store");web.send(200,"application/json",text);});
+ web.on("/api/fleet/config",HTTP_POST,[]{JsonDocument d;if(!body(d,false)||!fleetWritesAllowed())return;if(!d["name"].is<const char*>()||!d["dashboard"].is<bool>()){replyError("Invalid dashboard settings");return;}
+  xSemaphoreTake(fleetMutex,portMAX_DELAY);auto candidate=*fleetRegistry;auto local=candidate.config.devices.front();local.name=d["name"].as<std::string>();auto error=candidate.edit(local);candidate.config.dashboard=d["dashboard"];
+  if(error.empty()&&!fleetStorage.save(candidate.config))error="Cannot save dashboard settings";if(error.empty()){*fleetRegistry=candidate;localName=local.name;}xSemaphoreGive(fleetMutex);if(!error.empty())replyError(error);else replyOK();
+ });
+ web.on("/api/fleet/pair",HTTP_POST,[]{JsonDocument d;if(!body(d,false)||!fleetWritesAllowed())return;if(!d["endpoint"].is<const char*>()||!d["pairingKey"].is<const char*>()||!d["name"].is<const char*>()){replyError("Invalid pairing request");return;}Device device{d["id"]|"",d["name"].as<std::string>(),d["endpoint"].as<std::string>(),d["pairingKey"].as<std::string>()};if(!FleetRegistry::endpointValid(device.endpoint)||device.pairingKey.size()!=64){replyError("Use a hostname/IP and a 64-character pairing key");return;}JsonDocument info;auto result=peerRequest(device,"/api/peer/info",info);if(!result.error.empty()){replyError(result.error,409);return;}if((info["protocolVersion"]|0)!=1){replyError("Unsupported peer protocol",409);return;}device.id=info["deviceId"].as<std::string>();if(device.id==deviceId){replyError("This blind is already included");return;}
+  if((d["testOnly"]|false)){JsonDocument out;out["ok"]=true;out["deviceId"]=device.id;out["name"]=info["name"]|"";String text;serializeJson(out,text);web.send(200,"application/json",text);return;}
+  xSemaphoreTake(fleetMutex,portMAX_DELAY);auto candidate=*fleetRegistry;auto error=d["id"].is<const char*>()&&!d["id"].as<std::string>().empty()?candidate.edit(device):candidate.add(device);if(error.empty()&&!fleetStorage.save(candidate.config))error="Cannot save pairing";if(error.empty()){*fleetRegistry=candidate;senderSessions.erase(device.id);}xSemaphoreGive(fleetMutex);if(!error.empty())replyError(error);else {recordPeerStatus(device,info);replyOK();}
+ });
+ web.on("/api/fleet/remove",HTTP_POST,[]{JsonDocument d;if(!body(d,false)||!fleetWritesAllowed())return;if(!d["id"].is<const char*>()){replyError("Missing blind ID");return;}xSemaphoreTake(fleetMutex,portMAX_DELAY);auto candidate=*fleetRegistry;auto error=candidate.remove(d["id"].as<std::string>());if(error.empty()&&!fleetStorage.save(candidate.config))error="Cannot save removal";if(error.empty())*fleetRegistry=candidate;xSemaphoreGive(fleetMutex);if(!error.empty())replyError(error);else replyOK();});
+ web.on("/api/fleet/group",HTTP_POST,[]{JsonDocument d;if(!body(d,false)||!fleetWritesAllowed())return;if(!d["id"].is<const char*>()||!d["name"].is<const char*>()||!d["members"].is<JsonArray>()){replyError("Invalid group");return;}Group g{d["id"].as<std::string>(),d["name"].as<std::string>(),{}};for(JsonVariant id:d["members"].as<JsonArray>()){if(!id.is<const char*>()){replyError("Invalid member ID");return;}g.members.push_back(id.as<std::string>());}xSemaphoreTake(fleetMutex,portMAX_DELAY);auto candidate=*fleetRegistry;std::string error;if(d["remove"]|false)candidate.config.groups.erase(std::remove_if(candidate.config.groups.begin(),candidate.config.groups.end(),[&](auto old){return old.id==g.id;}),candidate.config.groups.end());else error=candidate.saveGroup(g);if(error.empty()&&!fleetStorage.save(candidate.config))error="Cannot save group";if(error.empty())*fleetRegistry=candidate;xSemaphoreGive(fleetMutex);if(!error.empty())replyError(error);else replyOK();});
+ web.on("/api/fleet/rotate-key",HTTP_POST,[]{JsonDocument d;if(!body(d,false)||!fleetWritesAllowed())return;xSemaphoreTake(fleetMutex,portMAX_DELAY);bool ok=fleetStorage.rotate();xSemaphoreGive(fleetMutex);if(ok){xSemaphoreTake(stateMutex,portMAX_DELAY);peerProtocol->resetSessions();xSemaphoreGive(stateMutex);replyOK();}else replyError("Pairing-key save failed",500);});
+ web.on("/api/fleet/command",HTTP_POST,[]{
+  JsonDocument d;if(!body(d,false))return;
+  if(!d["target"].is<const char*>()||!d["action"].is<const char*>()||!d["targetPercent"].is<int>()){replyError("Invalid group command");return;}
+  std::string action=d["action"].as<std::string>();int percent=d["targetPercent"].as<int>();
+  if((action!="stop"&&action!="raise"&&action!="lower"&&action!="target")||percent<0||percent>100){replyError("Invalid action or position");return;}
+  // One lock order throughout submission: state -> fleet. Workers never hold fleet while taking state.
+  xSemaphoreTake(stateMutex,portMAX_DELAY);
+  if(maintenance&&action!="stop"){xSemaphoreGive(stateMutex);replyError("Dashboard is updating",409);return;}
+  if(action!="stop"&&(!d["session"].is<const char*>()||!d["sequence"].is<uint32_t>()||!d["epoch"].is<uint32_t>()||!commands.acceptMovement(d["session"].as<std::string>(),d["sequence"].as<uint32_t>(),d["epoch"].as<uint32_t>()))){xSemaphoreGive(stateMutex);replyError("Stale group movement ignored",409);return;}
+  xSemaphoreTake(fleetMutex,portMAX_DELAY);
+  if(!fleetRegistry->config.dashboard){xSemaphoreGive(fleetMutex);xSemaphoreGive(stateMutex);replyError("Enable dashboard role first",409);return;}
+  auto snapshot=fleetRegistry->snapshot(d["target"].as<std::string>());
+  if(snapshot.empty()){xSemaphoreGive(fleetMutex);xSemaphoreGive(stateMutex);replyError("Unknown target",409);return;}
+  bool includesLocal=std::any_of(snapshot.begin(),snapshot.end(),[](const Device& device){return device.id==deviceId;});
+  if(action=="stop"){
+   // Local Stop happens before queue admission; even a saturated remote queue cannot block it.
+   if(includesLocal)applyPeerMotionLocked("stop",0);else commands.stop();
+  }
+  uint32_t localEpoch=commands.epoch();
+  for(auto& device:snapshot){if(device.id==deviceId)device.epoch=localEpoch;else{auto i=fleetStatuses.find(device.id);if(i!=fleetStatuses.end()&&i->second.contacted){device.epoch=i->second.epoch;device.expectedBoot=i->second.boot;}}}
+  uint32_t op=fleetDispatch.submit(snapshot,action,percent,millis());
+  xSemaphoreGive(fleetMutex);xSemaphoreGive(stateMutex);
+  if(!op){replyError("Command queue full; any requested local Stop was applied",409);return;}
+  JsonDocument out;out["ok"]=true;out["operationId"]=op;out["epoch"]=localEpoch;String text;serializeJson(out,text);web.send(200,"application/json",text);
+ });
+ web.on("/api/fleet/operation",HTTP_GET,[]{if(!requireAdmin())return;String raw=web.arg("id");if(raw.isEmpty()||raw.length()>10){replyError("Invalid operation ID");return;}uint32_t id=strtoul(raw.c_str(),nullptr,10);xSemaphoreTake(fleetMutex,portMAX_DELAY);auto results=fleetDispatch.results(id);xSemaphoreGive(fleetMutex);JsonDocument d;d["ok"]=true;auto a=d["members"].to<JsonArray>();for(auto result:results){auto r=a.add<JsonObject>();r["id"]=result.id;r["state"]=result.state;r["reason"]=result.reason;}String text;serializeJson(d,text);web.send(200,"application/json",text);});
+}

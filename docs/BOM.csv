@@ -1,0 +1,18 @@
+Item,Quantity,Specification,UK link,Notes
+Motor,1,"JGY-370, 12V, 20RPM, six-wire encoder, 6mm D shaft",https://www.amazon.co.uk/dp/B07DGBYJ63,Builder’s selected Hilitand listing; choose the matching variant. Delivered label SKU-GS00127-02. Listings can change.
+Controller,1,"ESP32-C3 SuperMini, USB-C, 4MB flash",https://www.amazon.co.uk/dp/B0D2DH1F1H,C3 SuperMini class board; check actual pin labels. Not C6/S3.
+Motor driver,1,DRV8871 single DC motor driver breakout,https://www.amazon.co.uk/dp/B0DQCK7FLL,"Builder-selected Tiardey listing; IN1/IN2, POWER and MOTOR terminals. Check board identity and current-limit resistor."
+Buck converter,1,"Mini360 adjustable DC-DC step-down, 12V to 3.3V",https://www.amazon.co.uk/dp/B0DY14VBW6,"Builder-selected listing; verify Mini360-style board, polarity and stable loaded output before connecting ESP."
+DC socket,1,DC-005-style female 5.5 × 2.1mm barrel socket,https://www.amazon.co.uk/s?k=DC-005+5.5+2.1+female+PCB+power+jack,Search link. Match measured body 8.92 × 10.74 × 13.81mm; different sockets may not fit.
+External supply,1,"Regulated UK 12V DC centre-positive adapter, matching barrel plug",https://www.amazon.co.uk/s?k=12V+2A+UK+power+supply+5.5x2.1+centre+positive,2A-rated supply is a candidate; confirm actual motor startup/stall needs. Builder’s exact adapter is unrecorded.
+Filament,As needed,"SUNLU PLA+, 1.75mm, Bone White, 1kg spool",https://www.amazon.co.uk/dp/B0F42MT8DP,Exact filament reported by builder; one spool is not consumed per unit.
+Prints,1 set,"Housing, cover, electronics insert, bead wheel",../cad/stl/,Four supplied V15 STL files; no buttons or retainers.
+Motor fixings,As fitted,Short metric screws matching gearbox threads,https://www.amazon.co.uk/s?k=M3+machine+screw+assortment+4+6+8+10mm,Candidate M3 kit only. Actual thread/count/length and safe insertion depth unconfirmed; do not force or bottom out.
+Wheel retention,1 set as required,Retainer/washer matched to the shaft and wheel,https://www.amazon.co.uk/s?k=6mm+shaft+retaining+washer,Photo shows metal wheel retention; exact type/size unconfirmed. Inspect actual shaft before ordering.
+Wall fixings,2,"Nails or screws suitable for mounting surface, shaft <3.2mm",https://www.amazon.co.uk/s?k=small+round+head+nails+3mm,"3.2mm holes, 76mm centres. Heads must retain ears; exact builder fixings and wall rating unconfirmed."
+Signal wire,Small quantity,26AWG stranded hookup wire,https://www.amazon.co.uk/s?k=26AWG+silicone+wire+kit,Short signal leads; retain motor harness where practical.
+Power wire,Small quantity,22AWG stranded red/black hookup wire,https://www.amazon.co.uk/s?k=22AWG+silicone+wire+red+black,For short power paths; route clear of moving wheel.
+Insulation,Small quantity,Heat-shrink and insulating sheet/pads,https://www.amazon.co.uk/s?k=heat+shrink+tubing+electrical+insulating+sheet,Insulate exposed joints and underside solder pads.
+Strain relief,As needed,Small cable ties / internal tie mounts,https://www.amazon.co.uk/s?k=mini+cable+ties+adhesive+mounts,Keep cable forces off solder joints and socket glue bond.
+Jack adhesive,Small quantity,Adhesive compatible with printed PLA+ and socket plastic,https://www.amazon.co.uk/s?k=two+part+epoxy+plastic+adhesive,"Search/example category, not the builder’s confirmed glue. Test a spare printed coupon and allow full cure."
+USB cable,1 reusable,USB-C data cable for initial programming,https://www.amazon.co.uk/s?k=USB+C+data+cable,Not a charge-only cable. Disconnect 12V before service USB.

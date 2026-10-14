@@ -1,0 +1,5 @@
+#include <cassert>
+#include <cstdio>
+#include "../ScheduledBlind/core/FleetDispatch.h"
+int main(){FleetDispatch q;std::vector<Device> d={{"a","A","a.local","k"},{"b","B","b.local","k"},{"c","C","c.local","k"}};auto op=q.submit(d,"raise",100,0);assert(op);d.clear();auto a=q.nextWork(0),b=q.nextWork(0);assert(a&&b&&!q.nextWork(0));q.complete(a->id,{"Accepted",""},1);auto c=q.nextWork(1);assert(c);q.complete(b->id,{"Offline","offline"},2);q.complete(c->id,{"Updating","update"},2);auto r=q.results(op);assert(r.size()==3&&r[0].state=="Accepted"&&r[1].state=="Offline");assert(!q.nextWork(3));assert(FleetDispatch::stale(10001,0));
+ FleetDispatch stop;auto old=stop.submit({{"a","A","a.local","k"}},"raise",100,0);auto halt=stop.submit({{"a","A","a.local","k"}},"stop",0,1);assert(halt);auto work=stop.nextWork(1);assert(work&&work->action=="stop");assert(stop.results(old)[0].state=="Rejected");puts("PASS dispatch: bounded concurrency, group results, snapshots, no retry, staleness, priority Stop");}

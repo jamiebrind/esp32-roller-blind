@@ -1,0 +1,55 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Blind controller</title><link rel="stylesheet" href="/app.css"></head>
+
+<body><main><header><div><small>LOCAL BLIND CONTROLLER</small><h1>Your blind</h1></div><span id="connection" class="pill">Connecting…</span></header>
+
+<div id="preview" hidden class="notice">Preview only · simulated blind · nothing controls the physical device</div>
+
+<div id="message" role="status" aria-live="polite"></div>
+
+<section id="login-panel" class="panel"><h2>Log in</h2><p>Use the administrator password set during USB setup. This local page uses your trusted home Wi-Fi.</p><form id="login-form"><label>Password<input id="password" type="password" autocomplete="current-password" required maxlength="63"></label><button class="primary">Log in</button></form></section><div id="authenticated" hidden>
+
+<nav aria-label="Sections"><button data-tab="control" class="selected">Control</button><button data-tab="calibration">Calibration</button><button data-tab="schedules">Schedules</button><button data-tab="settings">Settings</button><button id="fleet-tab" data-tab="blinds" hidden>Blinds</button><button data-tab="firmware">Firmware</button><button id="logout">Log out</button></nav><button id="stop-global" class="danger">■ Stop this blind</button>
+
+<section id="control" class="panel"><div class="position"><div class="blind-icon">▤</div><div><h2 id="position">—</h2><p id="motion">Waiting for device</p></div></div>
+
+<div class="actions"><button id="raise" class="primary">↑ Raise</button><button id="stop" class="danger">■ Stop</button><button id="lower" class="primary">↓ Lower</button></div>
+
+<label for="target">Target position <span id="target-value">50%</span></label><input id="target" type="range" min="0" max="100" value="50"><button id="go">Move to position</button>
+
+<div class="facts"><div><small>NEXT SCHEDULE</small><p id="next">—</p></div><div><small>DEVICE CLOCK</small><p id="clock">—</p></div></div>
+
+<p class="hint">0% is fully lowered. 100% is fully raised. Travel limits need calibration before automatic movement.</p></section>
+
+<section id="calibration" class="panel" hidden><h2>Set your travel limits</h2><p>Automation is paused during calibration. Hold a jog control, release at the desired position, then save that limit.</p>
+
+<button id="begin-calibration" class="primary">Begin calibration</button><div class="actions"><button id="jog-up">Hold to jog ↑</button><button id="jog-down">Hold to jog ↓</button></div>
+
+<ol><li>Move to fully raised, then <button id="save-upper">Save upper limit</button></li><li>Move to fully lowered, then <button id="save-lower">Save lower limit</button></li><li><button id="finish-calibration" class="primary">Finish and save calibration</button></li></ol>
+
+<details><summary>Recover position or clear a fault</summary><p>Only confirm the upper reference when the blind is physically at your saved upper limit.</p><button id="reference-upper">Blind is at upper limit</button><button id="reset-fault">Acknowledge fault</button><button id="reset-calibration">Reset calibration</button></details>
+
+<p>Live encoder count: <strong id="encoder-count">—</strong></p><p class="hint">Each continuous run is capped at 60 seconds. A feedback fault during calibration requires starting again. The encoder tracks motor rotation. If the chain slips or is moved by hand, correct the reference. Software limits are not physical end switches.</p></section>
+
+<section id="schedules" class="panel" hidden><div class="section-title"><h2>Schedules</h2><button id="add-rule">+ Add rule</button></div><label class="check"><input id="enable-schedules" type="checkbox"> Enable automatic schedules</label>
+
+<div class="facts"><p>Sunrise <strong id="sunrise">—</strong></p><p>Sunset <strong id="sunset">—</strong></p></div><div id="rules"></div><button id="save-schedules" class="primary">Save schedules</button><p class="hint">Rules run on the device. Keep the clock synchronised and calibrate travel before enabling automation.</p></section>
+
+<section id="settings" class="panel" hidden><h2>Device setup</h2><label>Blind name<input id="device-name" maxlength="32"></label><label class="check"><input id="dashboard-role" type="checkbox"> Show the multi-blind dashboard on this device</label><button id="save-device">Save device setup</button><details><summary>Pairing this blind</summary><p>Log in to another dashboard and enter this blind's hostname/IP and pairing key. Treat the key like a password.</p><button id="show-pair-key">Show pairing key</button><output id="pair-key" class="key-output"></output><button id="rotate-pair-key">Replace pairing key</button></details><h2>Location &amp; time</h2><p>Sunrise and sunset are calculated on the device using your coordinates.</p>
+
+<label class="check"><input id="location-set" type="checkbox"> Use this location for sunrise/sunset</label><div class="two"><label>Latitude<input id="latitude" type="number" step="any" min="-90" max="90"></label><label>Longitude<input id="longitude" type="number" step="any" min="-180" max="180"></label></div>
+
+<label>Timezone<input value="Europe/London · automatic GMT/BST" disabled></label><div class="two"><label>NTP server<input id="ntp1" maxlength="100"></label><label>Fallback NTP server<input id="ntp2" maxlength="100"></label></div>
+
+<label class="check"><input id="reverse-motor" type="checkbox"> Reverse motor direction</label>
+
+<details><summary>Motor safeguards</summary><label>Maximum continuous run (seconds)<input id="max-runtime" type="number" min="1" max="60"></label><label>No-movement timeout after startup (seconds)<input id="stall-ms" type="number" min="0.1" max="5" step="0.1"></label><label>Minimum encoder counts in 2 seconds<input id="min-progress" type="number" min="1" max="100000"></label><p class="hint">These must be checked on your real assembly. Encoder feedback does not measure pull force.</p></details>
+
+<button id="save-settings" class="primary">Save settings</button></section>
+
+<section id="blinds" class="panel" hidden><h2>Your blinds</h2><p>Each blind keeps its own limits and schedules. Group commands start approximately together.</p><div id="fleet-devices" class="fleet-grid"></div><h2>Groups</h2><div id="fleet-groups" class="fleet-grid"></div><pre id="group-results" role="status"></pre>
+<details><summary>Add or edit a blind</summary><label>Saved blind<select id="edit-device"><option value="">Add a new blind</option></select></label><label>Name<input id="pair-name" maxlength="32"></label><label>Hostname or IP<input id="pair-endpoint" placeholder="blind-abc123.local"></label><label>Pairing key<input id="pair-secret" type="password" autocomplete="off" maxlength="64"></label><div class="actions"><button id="test-pair">Test connection</button><button id="save-pair">Save blind</button><button id="remove-peer">Remove blind</button></div></details>
+<details><summary>Add or edit a group</summary><label>Saved group<select id="edit-group"><option value="">Create a group</option></select></label><label>Group name<input id="group-name" maxlength="32"></label><div id="group-members"></div><div class="actions"><button id="save-group">Save group</button><button id="remove-group">Remove group</button></div></details></section>
+<section id="firmware" class="panel" hidden><h2>Firmware updates</h2><p id="firmware-info">Checking version…</p><p class="hint">Choose the application .bin and its matching manifest. The motor and schedules pause while updating. Each device is updated individually.</p><label>Application firmware<input id="firmware-file" type="file" accept=".bin"></label><label>Release manifest<input id="manifest-file" type="file" accept=".json"></label><div class="actions"><button id="upload-firmware" class="primary">Install firmware</button><button id="cancel-firmware">Cancel update</button></div><progress id="upload-progress" max="100" value="0"></progress><p id="upload-message" role="status"></p></section>
+
+</div><footer>Your settings stay on this device</footer></main><script type="module" src="/app.js"></script></body></html>
+

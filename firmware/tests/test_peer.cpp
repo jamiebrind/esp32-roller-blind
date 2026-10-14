@@ -1,0 +1,4 @@
+#include <cassert>
+#include <cstdio>
+#include "../ScheduledBlind/core/PeerProtocol.h"
+int main(){PeerProtocol p("boot");assert(p.open("s",0));PeerCommand c{"id","s",1,1,"raise",100};auto a=p.accept(c,true,1);assert(a.accepted&&!a.duplicate);p.result("id",true,"");auto duplicate=p.accept(c,true,2);assert(duplicate.accepted&&duplicate.duplicate);auto changed=c;changed.targetPercent=0;assert(!p.accept(changed,true,3).accepted);c.commandId="next";assert(!p.accept(c,true,4).accepted);c.sequence=2;c.nonce="old";assert(!p.accept(c,true,4).accepted);c.nonce="s";assert(!p.accept(c,false,4).accepted);p.stop();assert(!p.accept(c,true,5).accepted);c.action="stop";assert(p.accept(c,true,6).accepted);assert(!p.accept({"later","s",3,p.epoch(),"raise",100},true,1800000).accepted);PeerProtocol reboot("new");assert(!reboot.accept(c,true,7).accepted);puts("PASS peer: session, authentication, duplicate payload, sequence, Stop epoch, expiry/reboot");}
