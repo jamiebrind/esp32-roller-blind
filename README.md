@@ -8,7 +8,7 @@ A printed bead-chain blind motor with local web controls, encoder-based limits, 
 
 1. [Parts list / UK buying links](docs/BOM.md)
 2. [Print and assemble](docs/ASSEMBLY.md)
-3. [Wire the electronics](docs/WIRING.md)
+3. [Wire the electronics — detailed drawings and overview](docs/WIRING.md)
 4. [Install and configure firmware](docs/FIRMWARE.md)
 5. [Calibrate, schedule and operate](docs/OPERATION.md)
 6. [Troubleshooting](docs/TROUBLESHOOTING.md)

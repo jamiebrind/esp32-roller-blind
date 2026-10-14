@@ -1,0 +1,19 @@
+Wire,From terminal,To terminal,Colour,Colour basis,Net
+W01,X1 centre (+12V),S12,RED,suggested,+12V
+W02,S12,U1 IN+,RED,suggested,+12V
+W03,S12,U3 POWER+ / VM,RED,suggested,+12V
+W04,X1 sleeve (12V-),S0,BLACK,suggested,0V
+W05,S0,U1 IN-,BLACK,suggested,0V
+W06,S0,U1 OUT-,BLACK,suggested,0V
+W07,S0,U3 POWER- / GND,BLACK,suggested,0V
+W08,S0,U2 GND,BLACK,suggested,0V
+W09,S0,E1 GND / BLACK lead,BLACK,motor harness,0V
+W10,U1 OUT+ (+3.3V),S3,BLUE,suggested,+3.3V
+W11,S3,U2 3V3,BLUE,suggested,+3.3V
+W12,S3,E1 V+ / BLUE lead,BLUE,motor harness,+3.3V
+W13,U2 GPIO0,U3 IN1,VIOLET,suggested,IN1
+W14,U2 GPIO1,U3 IN2,ORANGE,suggested,IN2
+W15,E1 A / YELLOW lead,U2 GPIO3,YELLOW,motor harness,ENC_A
+W16,E1 B / GREEN lead,U2 GPIO4,GREEN,motor harness,ENC_B
+W17,U3 OUT1,M1 RED lead,RED,motor harness,MOTOR_A
+W18,U3 OUT2,M1 WHITE lead,WHITE,motor harness,MOTOR_B
