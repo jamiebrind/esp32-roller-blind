@@ -66,3 +66,7 @@ arduino-cli upload --fqbn esp32:esp32:esp32c3:CDCOnBoot=cdc,UploadSpeed=115200 -
 The 2.0.3 release passed 20 C++ test executables, 10 JavaScript cases and 4 Python cases; compile used 1,303,375 bytes flash and 42,232 bytes static RAM. A real Wi-Fi update/reboot retained credentials and calibration. The builder subsequently reported working motor/encoder feedback and supplied installed photographs. Precise loaded stopping/force limits and a real multi-blind deployment are not established by those checks.
 
 The `firmware/tests/` sources are included. JavaScript tests run with `node --test firmware/tests/test_web.mjs`; Python tests use Python 3. C++ tests require a C++17 compiler (some also require separately installed ArduinoJson headers). See [firmware/README.md](../firmware/README.md) for test commands. Automated browser file-picker upload was not verified; the device updater itself was tested via authenticated HTTP.
+
+### Live schedule edit test (2.0.3)
+
+On the installed prototype after calibration, a temporary evening rule raised to an encoder-reported 20%. Editing that same already-used rule to a later time then lowered to 0%. Both events ran, encoder counts changed, and the motor stopped with no fault. Original rules were restored. This checks the reported same-day edit defect; it is not a long-term stopping/obstruction qualification.
