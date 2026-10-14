@@ -1,6 +1,6 @@
 # Firmware installation and development
 
-Current version: **2.0.2**, ESP32-C3, 4MB flash, DRV8871 GPIO0/1, encoder GPIO3/4. There is no default administrator password or embedded Wi-Fi password. Set your own credentials. Existing controllers keep compatible saved settings unless you erase flash.
+Prepared version: **2.0.3** (physical controller remains on 2.0.2 until installation), ESP32-C3, 4MB flash, DRV8871 GPIO0/1, encoder GPIO3/4. There is no default administrator password or embedded Wi-Fi password. Set your own credentials. Existing controllers keep compatible saved settings unless you erase flash.
 
 ## Initial install: prebuilt firmware
 
@@ -50,7 +50,7 @@ arduino-cli core install esp32:esp32@3.3.12 --additional-urls https://espressif.
 arduino-cli lib install ArduinoJson@7.4.3
 python firmware/tools/embed_web.py
 arduino-cli compile --fqbn esp32:esp32:esp32c3:CDCOnBoot=cdc,UploadSpeed=115200 --build-property upload.maximum_size=1966080 --output-dir firmware/build firmware/ScheduledBlind
-python firmware/tools/release_manifest.py --binary firmware/build/ScheduledBlind.ino.bin --version 2.0.2 --output firmware/build/manifest.json
+python firmware/tools/release_manifest.py --binary firmware/build/ScheduledBlind.ino.bin --version 2.0.3 --output firmware/build/manifest.json
 ```
 
 The sketch includes `partitions.csv`; each app slot is 1,966,080 bytes. Update the source FIRMWARE_VERSION and manifest version together for future releases. Rebuilding can change binary hashes; always regenerate the matching manifest. Source/web editing does not modify the installed device until you upload.

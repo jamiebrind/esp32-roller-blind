@@ -16,3 +16,4 @@ test-build/
 .cache/
 .DS_Store
 Thumbs.db
+/firmware/ScheduledBlind/build/

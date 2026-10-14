@@ -4,6 +4,7 @@
 #include "core/LegacyLimits.h"
 #include "core/Motion.h"
 #include "core/Scheduler.h"
+#include "core/ScheduleClaimsJson.h"
 class DeviceStorage{
  Preferences p;
  StorageRecord record(const char* key){
@@ -28,7 +29,7 @@ public:
   if(selected){JsonDocument d;if(!deserializeJson(d,selected->payload))settingsFromJson(d.as<JsonVariantConst>(),s,true);}return s;
  }
  bool saveSettings(Settings& s){
-  Settings candidate=s;candidate.sequence++;JsonDocument inner;settingsToJson(candidate,inner);std::string payload;serializeJson(inner,payload);
+  Settings next=s;next.sequence++;Settings candidate;std::string payload;if(!canonicalSettingsPayload(next,candidate,payload))return false;
   JsonDocument d;d["version"]=1;d["sequence"]=candidate.sequence;d["checksum"]=checksum(payload);d["payload"]=payload;String text;serializeJson(d,text);
   const char* key=candidate.sequence%2?"settings1":"settings0";
   if(p.putString(key,text)!=text.length())return false;
@@ -40,13 +41,20 @@ public:
  }
  bool savePosition(PositionRecord pos){JsonDocument d;d["calibrationVersion"]=pos.calibrationVersion;d["count"]=pos.count;d["valid"]=pos.valid;d["moving"]=pos.moving;String text;serializeJson(d,text);return p.putString("position",text)==text.length();}
  bool markMoving(PositionRecord pos){pos.moving=true;return savePosition(pos);}
- std::map<uint32_t,int64_t> loadClaims(){
-  JsonDocument d;std::map<uint32_t,int64_t> values;if(deserializeJson(d,p.getString("claims","[]")))return values;
-  for(JsonVariant r:d.as<JsonArray>())if(r["id"].is<uint32_t>()&&r["day"].is<int64_t>())values[r["id"].as<uint32_t>()]=r["day"].as<int64_t>();return values;
+ bool migrateClaims(const Settings& settings){
+  JsonDocument old;if(deserializeJson(old,p.getString("claims","[]")))return true;
+  if(!claimsNeedMigration(old.as<JsonVariantConst>()))return true;
+  auto values=claimsFromJson(old.as<JsonVariantConst>(),settings);JsonDocument upgraded;claimsToJson(values,settings,upgraded);
+  String text;serializeJson(upgraded,text);
+  // Migration must reach NVS before any schedule edit can be accepted.
+  return p.putString("claims",text)==text.length()&&p.getString("claims","")==text;
+ }
+ ScheduleClaims loadClaims(const Settings& settings){
+  JsonDocument d;if(deserializeJson(d,p.getString("claims","[]")))return {};
+  return claimsFromJson(d.as<JsonVariantConst>(),settings);
  }
  bool claimEvent(const Event& e,const Scheduler& scheduler,const Settings& settings){
-  auto values=scheduler.claims();values[e.ruleId]=e.localDay;JsonDocument d;auto a=d.to<JsonArray>();
-  for(const auto& rule:settings.rules){auto i=values.find(rule.id);if(i!=values.end()){auto r=a.add<JsonObject>();r["id"]=i->first;r["day"]=i->second;}}
+  auto values=scheduler.claims();values[e.ruleId]={e.localDay,e.identity};JsonDocument d;claimsToJson(values,settings,d);
   String text;serializeJson(d,text);return p.putString("claims",text)==text.length();
  }
 };

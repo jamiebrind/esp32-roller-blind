@@ -34,4 +34,4 @@ Current firmware uses driver IN1 GPIO0 and IN2 GPIO1. GPIO7/6 in historical buil
 
 ## Schedule shows tomorrow
 
-Check 24-hour time, selected weekdays, valid NTP time and whether today’s event was already recorded/skipped. The firmware does not replay passed events. The documented 02:45/14:45 confusion was a time-entry issue, not a next-day restriction.
+Check 24-hour time, selected weekdays, valid NTP time and whether today’s event was already recorded/skipped. The firmware does not replay passed events. The documented 02:45/14:45 confusion was a time-entry issue. Firmware 2.0.2 also retained an already-used record when a rule was edited; 2.0.3 fixes that case while preserving duplicate protection for unchanged rules.

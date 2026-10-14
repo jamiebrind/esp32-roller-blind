@@ -18,7 +18,7 @@ The encoder measures incremental movement, not an absolute position. Every reboo
 
 The browser can be closed; rules run on the ESP. Set the device clock via NTP and check it displays valid UK time. For sunrise/sunset, enter latitude/longitude and enable use of that location. Add up to eight rules with weekdays, fixed time or sunrise/sunset, offset and target percentage. Save and enable schedules.
 
-Times use **24-hour UK local time**. `02:45` means 2:45 AM; `14:45` means 2:45 PM. A future eligible event can run today. If its time has passed, the next eligible date is shown. The next action skips already-recorded occurrences so editing an already-executed rule may leave it scheduled for the following day; create a new rule if you deliberately want a separate future occurrence today.
+Times use **24-hour UK local time**. `02:45` means 2:45 AM; `14:45` means 2:45 PM. A future eligible event can run today. If its time has passed, the next eligible date is shown. From firmware 2.0.3, editing a rule creates a fresh schedule identity: its next future occurrence can run today even if the earlier version was already executed or skipped. Unchanged rules remain protected from duplicate execution. Saving an elapsed time never replays it immediately.
 
 Automatic GMT/BST changes are handled on-device. Once NTP synchronises, the clock can continue through a network outage for up to 24 hours since last sync. Missed events, large time corrections, busy/calibrating/faulted/unknown-position events are skipped rather than replayed. An event already recorded is not automatically repeated after a reboot.
 

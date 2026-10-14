@@ -19,7 +19,7 @@
 #include "OtaAdapter.h"
 #include "FleetGlobals.h"
 #include "WifiRetry.h"
-constexpr const char* FIRMWARE_VERSION="2.0.2";
+constexpr const char* FIRMWARE_VERSION="2.0.3";
 
 constexpr uint8_t IN1=0,IN2=1,ENC_A=3,ENC_B=4;
 WebServer web(80);Motion motion;Settings settings;ClockState clockState;Scheduler scheduler;DeviceStorage storage;
@@ -178,7 +178,7 @@ void setup(){
  stateMutex=xSemaphoreCreateMutex();fleetMutex=xSemaphoreCreateMutex();if(!stateMutex||!fleetMutex){Serial.println("State mutex failed; motor disabled");return;}
  if(!storage.begin()||!adminStorage.begin()||!fleetStorage.begin()){Serial.println("Storage failed; motor disabled");return;}
  if(!storage.migrateManualLimits()){Serial.println("Limit migration failed; motor disabled");return;}
- settings=storage.loadSettings();motion.restore(storage.loadPosition(),settings.span,settings.encoderSign,settings.calibrationVersion);motion.invalidatePosition();motion.maxRuntime=settings.maxRuntime;motion.stallMs=settings.stallMs;motion.minProgressCounts=settings.minProgressCounts;scheduler.restoreClaims(storage.loadClaims());
+ settings=storage.loadSettings();if(!storage.migrateClaims(settings)){Serial.println("Schedule history migration failed; motor disabled");return;}motion.restore(storage.loadPosition(),settings.span,settings.encoderSign,settings.calibrationVersion);motion.invalidatePosition();motion.maxRuntime=settings.maxRuntime;motion.stallMs=settings.stallMs;motion.minProgressCounts=settings.minProgressCounts;scheduler.restoreClaims(storage.loadClaims(settings));
  pinMode(ENC_A,INPUT_PULLUP);pinMode(ENC_B,INPUT_PULLUP);quadrature.reset((digitalRead(ENC_A)?2:0)|(digitalRead(ENC_B)?1:0));
  attachInterrupt(digitalPinToInterrupt(ENC_A),encoderISR,CHANGE);attachInterrupt(digitalPinToInterrupt(ENC_B),encoderISR,CHANGE);
  if(!ledcAttach(IN1,1000,8)||!ledcAttach(IN2,1000,8)){Serial.println("PWM setup failed; motor disabled");return;}

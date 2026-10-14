@@ -1,4 +1,4 @@
-# Arduino controller 2.0.2
+# Arduino controller 2.0.3 — prepared update
 
 See [installation/build instructions](../docs/FIRMWARE.md), [wiring](../docs/WIRING.md) and [operation](../docs/OPERATION.md).
 
@@ -7,7 +7,7 @@ See [installation/build instructions](../docs/FIRMWARE.md), [wiring](../docs/WIR
 - tools/embed_web.py: regenerate WebAssets.h after webpage edits.
 - tools/release_manifest.py: create the matching OTA manifest from an application binary.
 - tools/preview_server.py: local browser simulation only; demo password `demo-blind` is not a real-device password.
-- build/: 2.0.2 initial USB images plus application/manifest for wireless updates.
+- build/: 2.0.3 initial USB images plus application/manifest for wireless updates.
 - tests/: original portable test sources; no compiled host tools or private logs.
 
 ## Host tests

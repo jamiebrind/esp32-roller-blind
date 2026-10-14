@@ -24,3 +24,9 @@ inline std::string settingsFromJson(JsonVariantConst v,Settings& out,bool calibr
  }
  auto error=SettingsValidator::validate(s);if(!error.empty())return error;out=std::move(s);return {};
 }
+// Keep live settings identical to the JSON representation restored after reboot.
+inline bool canonicalSettingsPayload(const Settings& input,Settings& canonical,std::string& payload){
+ JsonDocument doc;settingsToJson(input,doc);payload.clear();serializeJson(doc,payload);
+ JsonDocument persisted;if(deserializeJson(persisted,payload))return false;
+ canonical=input;return settingsFromJson(persisted.as<JsonVariantConst>(),canonical,true).empty();
+}
