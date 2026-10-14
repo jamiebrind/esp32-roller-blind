@@ -1,6 +1,6 @@
 # Firmware installation and development
 
-Prepared version: **2.0.3** (physical controller remains on 2.0.2 until installation), ESP32-C3, 4MB flash, DRV8871 GPIO0/1, encoder GPIO3/4. There is no default administrator password or embedded Wi-Fi password. Set your own credentials. Existing controllers keep compatible saved settings unless you erase flash.
+Current version: **2.0.3**, ESP32-C3, 4MB flash, DRV8871 GPIO0/1, encoder GPIO3/4. There is no default administrator password or embedded Wi-Fi password. Set your own credentials. Existing controllers keep compatible saved settings unless you erase flash.
 
 ## Initial install: prebuilt firmware
 
@@ -63,6 +63,6 @@ arduino-cli upload --fqbn esp32:esp32:esp32c3:CDCOnBoot=cdc,UploadSpeed=115200 -
 
 ## Tests and evidence
 
-The original 2.0.2 release passed 18 C++ test executables, 10 JavaScript cases and 4 Python cases; compile used 1,298,495 bytes flash and 42,232 bytes static RAM. A real Wi-Fi update/reboot retained credentials and calibration. The builder subsequently reported working motor/encoder feedback and supplied installed photographs. Precise loaded stopping/force limits and a real multi-blind deployment are not established by those checks.
+The 2.0.3 release passed 20 C++ test executables, 10 JavaScript cases and 4 Python cases; compile used 1,303,375 bytes flash and 42,232 bytes static RAM. A real Wi-Fi update/reboot retained credentials and calibration. The builder subsequently reported working motor/encoder feedback and supplied installed photographs. Precise loaded stopping/force limits and a real multi-blind deployment are not established by those checks.
 
 The `firmware/tests/` sources are included. JavaScript tests run with `node --test firmware/tests/test_web.mjs`; Python tests use Python 3. C++ tests require a C++17 compiler (some also require separately installed ArduinoJson headers). See [firmware/README.md](../firmware/README.md) for test commands. Automated browser file-picker upload was not verified; the device updater itself was tested via authenticated HTTP.

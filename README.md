@@ -14,9 +14,9 @@ A printed bead-chain blind motor with local web controls, encoder-based limits, 
 6. [Troubleshooting](docs/TROUBLESHOOTING.md)
 7. [Fusion CAD screenshot gallery](docs/CAD_GALLERY.md)
 
-## Schedule fix prepared
+## Schedule edit fix — 2.0.3
 
-Firmware 2.0.3 corrects edited rules being skipped for the rest of the day. See [CHANGELOG.md](CHANGELOG.md). This candidate is prepared for installation; the physical controller still runs 2.0.2.
+Firmware 2.0.3 corrects edited rules being skipped for the rest of the day. See [CHANGELOG.md](CHANGELOG.md). Version 2.0.3 was installed over Wi-Fi and its reboot, retained settings and stopped motor state were verified on the prototype.
 
 ## What it does
 

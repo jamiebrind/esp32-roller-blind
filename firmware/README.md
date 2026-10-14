@@ -1,4 +1,4 @@
-# Arduino controller 2.0.3 — prepared update
+# Arduino controller 2.0.3
 
 See [installation/build instructions](../docs/FIRMWARE.md), [wiring](../docs/WIRING.md) and [operation](../docs/OPERATION.md).
 
