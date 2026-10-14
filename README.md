@@ -38,7 +38,7 @@ The enclosure is approximately 50 × 140 mm without ears, 90 × 140 mm including
 
 ## The photographed build
 
-SUNLU PLA+ 1.75 mm, 1 kg Bone White, printed on a Bambu Lab P1S using the Generic PLA filament preset and the 0.2 mm Strength process profile. Exact preset version, orientation, support choices and fastener/adhesive details have not been recorded. The supplied files are STL/CAD, not a prepared Bambu 3MF print project.
+SUNLU PLA+ 1.75 mm, 1 kg Bone White, printed on a Bambu Lab P1S using the Generic PLA filament preset and the 0.2 mm Strength process profile. The motor and DC socket were superglued into place; an M3 bolt and washer in the shaft-end thread retain the gear. Exact preset version, orientation, support choices, glue brand, bolt length and washer dimensions have not been recorded. The supplied files are STL/CAD, not a prepared Bambu 3MF print project.
 
 ## Credits and licence
 
